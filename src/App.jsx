@@ -11,7 +11,7 @@ function App() {
 
   useEffect(() => {
     fetchPokeData();
-  }, [pokemons]);
+  }, []);
 
   const fetchPokeData = async () => {
     try {
