@@ -32,8 +32,6 @@ const PokeCard = ({ url, name }) => {
   const text = `text-${pokemon?.type}`;
   const img = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon?.id}.png`;
 
-  console.log(text);
-
   return (
     <>
       {pokemon && (

@@ -6,22 +6,27 @@ import PokeCard from "./components/PokeCard";
 
 function App() {
   const [pokemons, setpokemons] = useState([]);
-
-  const url = "https://pokeapi.co/api/v2/pokemon/?limit=10&offset=0";
+  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(20);
 
   useEffect(() => {
-    fetchPokeData();
+    fetchPokeData(true);
   }, []);
 
-  const fetchPokeData = async () => {
+  const fetchPokeData = async (isFirstFetch) => {
     try {
+      const offsetValue = isFirstFetch ? 0 : offset + limit;
+      const url = `https://pokeapi.co/api/v2/pokemon/?limit=${limit}&offset=${offsetValue}`;
+
       const response = await axios.get(url);
       // console.log(response.data.results);
-      setpokemons(response.data.results);
+      setpokemons([...pokemons, ...response.data.results]);
+      setOffset(offsetValue);
     } catch (error) {
       console.error(error);
     }
   };
+  console.log(offset);
 
   return (
     <>
@@ -42,6 +47,14 @@ function App() {
             )}
           </div>
         </section>
+        <div className="text-center">
+          <button
+            onClick={() => fetchPokeData(false)}
+            className="bg-slate-800 px-6 my-4 text-base rounded-lg font-bold text-white"
+          >
+            더 보기
+          </button>
+        </div>
       </article>
     </>
   );
