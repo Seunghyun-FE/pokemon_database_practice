@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Loading } from "../../assets/Loading";
 import { LessThan } from "../../assets/LessThan";
@@ -8,6 +8,7 @@ import { ArrowLeft } from "../../assets/ArrowLeft";
 import { Balance } from "../../assets/Balance";
 import { Vector } from "../../assets/Vector";
 import Type from "../../components/Type";
+import BaseStat from "../../components/BaseStat";
 
 const DetailPage = () => {
   const [pokemon, setPokemon] = useState();
@@ -41,17 +42,20 @@ const DetailPage = () => {
         );
 
         const formattedPokemonData = {
-          id,
-          name,
+          id: id,
+          name: name,
           weight: weight / 10,
           height: height / 10,
           previous: nextAndPreviousPokemon.previous,
           next: nextAndPreviousPokemon.next,
           abilities: formatPokemonAbilities(abilities),
+
           stats: formatPokemonStats(stats),
-          DamageRelations,
           types: types.map((type) => type.type.name),
+          DamageRelations: DamageRelations,
         };
+
+        console.log(stats);
 
         setPokemon(formattedPokemonData);
         setIsLoading(false);
@@ -75,22 +79,19 @@ const DetailPage = () => {
     statSATK,
     statSDEP,
     statSPD,
-  ]) => {
-    [
-      { name: "Hit Points", baseStat: statHP.base_stat },
-      { name: "Attack", baseStat: statATK.base_stat },
-      { name: "Defense", baseStat: statDEP.base_stat },
-      { name: "Special Attack", baseStat: statSATK.base_stat },
-      { name: "Special Defense", baseStat: statSDEP.base_stat },
-      { name: "Speed", baseStat: statSPD.base_stat },
-    ];
-  };
+  ]) => [
+    { name: "Hit Points", baseStat: statHP.base_stat },
+    { name: "Attack", baseStat: statATK.base_stat },
+    { name: "Defense", baseStat: statDEP.base_stat },
+    { name: "Special Attack", baseStat: statSATK.base_stat },
+    { name: "Special Defense", baseStat: statSDEP.base_stat },
+    { name: "Speed", baseStat: statSPD.base_stat },
+  ];
 
   async function getNextAndPreviousPokemon(id) {
     const urlPokemon = `${baseUrl}?limit=1&offset=${id - 1}`;
 
     const { data: pokemonData } = await axios.get(urlPokemon);
-    console.log(pokemonData);
 
     const nextResponse =
       pokemonData.next && (await axios.get(pokemonData.next));
@@ -208,9 +209,22 @@ const DetailPage = () => {
               ))}
             </div>
           </div>
-          <h2 className={`text-base font-semibold ${text}`}>기본 능력치</h2>
 
-          <div className="w-full">Stat</div>
+          <h2 className={`text-base font-semibold ${text}`}>기본 능력치</h2>
+          <div className="w-full">
+            <table>
+              <tbody>
+                {pokemon.stats.map((stat) => (
+                  <BaseStat
+                    key={stat.name}
+                    valueStat={stat.baseStat}
+                    nameStat={stat.name}
+                    type={pokemon.types[0]}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {pokemon.DamageRelations && (
             <div className="w-10/12">
