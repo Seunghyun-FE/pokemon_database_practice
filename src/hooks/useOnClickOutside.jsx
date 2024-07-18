@@ -19,3 +19,5 @@ export default function useOnclickOutside(ref, handler) {
     };
   }, [ref, handler]);
 }
+
+//모달 내부
