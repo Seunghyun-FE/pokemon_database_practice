@@ -1,8 +1,28 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import app from "../firebase";
 
 const NavBar = () => {
+  const auth = getAuth(app); //firebase.js와의 연결
+  const provider = new GoogleAuthProvider();
+
   const [show, setShow] = useState(false);
+
+  const { pathname } = useLocation(); //url 정보를 변수로 저장
+
+  signInWithPopup(auth, provider);
+
+  const handleAuth = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }; // 구글 로그인 정보 가져오기
 
   const listener = () => {
     if (window.scrollY > 50) {
@@ -29,9 +49,27 @@ const NavBar = () => {
           onClick={() => (window.location.href = "/")}
         />
       </Logo>
+      {pathname === "/login" ? <Login onClick={handleAuth}>Login</Login> : null}
     </NavWrapper>
   );
 };
+
+const Login = styled.a`
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.55px;
+  border: 1px solid #f9f9f9;
+  border-radius: 4px;
+  transition: all 0.2s ease 0s;
+  color: white;
+
+  &:hover {
+    background-color: #f9f9f9;
+    color: #000;
+    border-color: transparent;
+  }
+`;
 
 const Image = styled.img`
   cursor: pointer;
