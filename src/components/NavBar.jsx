@@ -39,8 +39,6 @@ const NavBar = () => {
     };
   }, [pathname]); // pathname 변경시 위 useEffet 호출
 
-  signInWithPopup(auth, provider);
-
   const handleAuth = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
