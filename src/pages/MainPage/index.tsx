@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import PokeCard from "../../components/PokeCard";
 import AutoComplete from "../../components/AutoComplete";
+import { PokemonData, PokemonNameAndUrl } from "../../types/PokemonData";
 
 function MainPage() {
   //all pokemons data
-  const [allPokemons, setAllPokemons] = useState([]);
+  const [allPokemons, setAllPokemons] = useState<PokemonNameAndUrl[]>([]);
 
   //really list poke data
-  const [displayedPokemons, setDisplayedPokemons] = useState([]);
+  const [displayedPokemons, setDisplayedPokemons] = useState<
+    PokemonNameAndUrl[]
+  >([]);
 
   //한번에 보여주는 수
   const limitNum = 20;
@@ -18,7 +21,10 @@ function MainPage() {
     fetchPokeData();
   }, []);
 
-  function filterDisplayedPokemonData(allPokemonsData, displayedPokemons = []) {
+  function filterDisplayedPokemonData(
+    allPokemonsData: PokemonNameAndUrl[],
+    displayedPokemons: PokemonNameAndUrl[] = []
+  ) {
     const limit = displayedPokemons.length + limitNum;
 
     const array = allPokemonsData.filter((_, index) => index + 1 <= limit);
@@ -28,7 +34,7 @@ function MainPage() {
   const fetchPokeData = async () => {
     try {
       //1008 포켓몬 데이타 받기
-      const response = await axios.get(url);
+      const response = await axios.get<PokemonData>(url);
       // console.log(response.data.results);
       //모든 포켓몬 데이타 기억
       setAllPokemons(response.data.results);
@@ -51,7 +57,7 @@ function MainPage() {
         <section className="pt-6 flex flex-col justify-center items-center overflow-auto z-0">
           <div className="flex flex-row flex-wrap gap-[16px] items-center justify-center px-2 max-w-4xl">
             {displayedPokemons.length > 0 ? (
-              displayedPokemons.map(({ url, name }, index) => (
+              displayedPokemons.map(({ url, name }: PokemonNameAndUrl) => (
                 <PokeCard key={url} url={url} name={name} />
               ))
             ) : (

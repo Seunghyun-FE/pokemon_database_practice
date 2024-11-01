@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
+  User,
   getAuth,
   signInWithPopup,
   GoogleAuthProvider,
@@ -9,17 +10,16 @@ import {
   signOut,
 } from "firebase/auth";
 import app from "../firebase";
+import storage from "../utils/storage";
 
-const initialUserData = localStorage.getItem("userData")
-  ? JSON.parse(localStorage.getItem("userData"))
-  : {};
+const initialUserData = storage.get<User>("userData");
 
 const NavBar = () => {
   const auth = getAuth(app); //firebase.js와의 연결
   const provider = new GoogleAuthProvider();
 
   const [show, setShow] = useState(false);
-  const [userData, setUserData] = useState(initialUserData);
+  const [userData, setUserData] = useState<User | null>(initialUserData);
 
   const { pathname } = useLocation(); //url 정보를 변수로 저장
 
@@ -44,7 +44,9 @@ const NavBar = () => {
       .then((result) => {
         console.log(result);
         setUserData(result.user);
-        localStorage.setItem("userData", JSON.stringify(result.user));
+        storage.set("userData", result.user);
+
+        //        localStorage.setItem("userData", JSON.stringify(result.user));
       })
       .catch((error) => {
         console.error(error);
@@ -70,7 +72,9 @@ const NavBar = () => {
   const handleLogOut = () => {
     signOut(auth)
       .then(() => {
-        setUserData({});
+        // localStorage.removeItem('userData');
+        storage.remove("userData");
+        setUserData(null);
       })
       .catch((error) => {
         alert(error.message);
@@ -90,7 +94,9 @@ const NavBar = () => {
         <Login onClick={handleAuth}>Login</Login>
       ) : (
         <SignOut>
-          <UserImg src={userData.photoURL} alt={userData.displayName} />
+          {userData?.photoURL && (
+            <UserImg src={userData.photoURL} alt="user photo" />
+          )}
           <Dropdown>
             <span onClick={handleLogOut}>Sign out</span>
           </Dropdown>
@@ -164,7 +170,7 @@ const Logo = styled.a`
   margin-top: 4px;
 `;
 
-const NavWrapper = styled.nav`
+const NavWrapper = styled.nav<{ show: boolean }>`
   position: fixed;
   top: 0;
   left: 0;

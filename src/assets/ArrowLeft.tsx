@@ -1,6 +1,8 @@
 //import { ClassNameProps } from "../types/ClassNameProps";
 
-export const ArrowLeft = ({ className: CN = "" }) => (
+import { ClassNameProps } from "../types/ClassNameProps";
+
+export const ArrowLeft = ({ className: CN = "" }: ClassNameProps) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={CN}
